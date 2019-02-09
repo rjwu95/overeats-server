@@ -10,4 +10,4 @@ var userSchema = new Schema({
   restaurantKey: { type: String, default: null }
 });
 
-module.exports = mongoose.model('user', userSchema);
+module.exports = mongoose.model('User', userSchema);

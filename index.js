@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const userRouter = require('./routes/user');
-const menuRouter = require('./routes/menu');
+const restRouter = require('./routes/restaurant');
 const app = express();
 
 app.use(express.static('dist'));
@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
   res.end('Hello over eats!');
 });
 app.use('/users', userRouter);
-app.use('/menus', menuRouter);
+app.use('/restaurant', restRouter);
 app.listen(8080, () => console.log('Listening on port 8080!'));
 
 module.exports = app;

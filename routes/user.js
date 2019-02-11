@@ -94,6 +94,28 @@ router.post('/signup', (req, res) => {
   });
 });
 
+router.post('/signout', (req, res) => {
+  //connect with database
+  let { email, phoneNumber } = req.body;
+  mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
+    useNewUrlParser: true
+  });
+  let db = mongoose.connection;
+  db.on('error', console.error.bind(console, 'connection error:'));
+  // if connection is success
+  db.once('open', function() {
+    console.log('we are connected!');
+    //check there's same phoneNumber
+    User.remove({ email, phoneNumber }, (err, user) => {
+      if (err) {
+        return res.status(500).json({ error: err });
+      }
+      res.writeHead(200);
+      res.end('ok');
+    });
+  });
+});
+
 /* Sign Info */
 router.post('/signinfo', (req, res) => {
   //connect with database

@@ -16,7 +16,7 @@ router.get('/:category/:address', (req, res) => {
   let db = mongoose.connection;
   db.on('error', console.error.bind(console, 'connection error:'));
   // if connection is success
-  db.once('open', function() {
+  db.once('open', () => {
     console.log('we are connected!');
     //check there's same category
 
@@ -25,13 +25,11 @@ router.get('/:category/:address', (req, res) => {
         let { _id, name, thumbImg, rating } = el;
         return { _id, name, thumbImg, rating };
       });
-      console.log(arr);
-      console.log('finding DB~');
       if (err) {
         return res.status(500).json({ error: err });
       }
       res.writeHead(200);
-      res.end(JSON.stringify(rest));
+      res.end(JSON.stringify(arr));
       return;
     });
   });

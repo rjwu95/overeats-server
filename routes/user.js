@@ -93,7 +93,7 @@ router.post('/signup', (req, res) => {
     });
   });
 });
-
+/* Sign Out*/
 router.post('/signout', (req, res) => {
   //connect with database
   let { email, phoneNumber } = req.body;
@@ -116,7 +116,7 @@ router.post('/signout', (req, res) => {
   });
 });
 
-/* Sign Info */
+/* Info */
 router.post('/signinfo', (req, res) => {
   //connect with database
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {

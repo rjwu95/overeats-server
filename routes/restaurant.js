@@ -1,13 +1,15 @@
 const Restaurant = require('../models/restaurant');
-const list = require('./category');
+const categoryList = require('./category');
+const addressList = require('./address');
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
 
-router.get('/:category', (req, res) => {
-  let { category } = req.params;
+router.get('/:category/:address', (req, res) => {
+  let { category, address } = req.params;
   // find category.js
-  category = list[category];
+  category = categoryList[category];
+  address = addressList[address];
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
   });
@@ -18,7 +20,7 @@ router.get('/:category', (req, res) => {
     console.log('we are connected!');
     //check there's same category
 
-    Restaurant.find({ category }, async (err, rest) => {
+    Restaurant.find({ category, address }, async (err, rest) => {
       console.log('finding DB~');
       if (err) {
         return res.status(500).json({ error: err });

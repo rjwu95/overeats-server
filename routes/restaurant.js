@@ -20,7 +20,7 @@ router.get('/:category/:address', (req, res) => {
     console.log('we are connected!');
     //check there's same category
 
-    Restaurant.find({ category, address }, async (err, rest) => {
+    Restaurant.find({ category, address }, (err, rest) => {
       let arr = rest.map(el => {
         let { _id, name, thumbImg, rating } = el;
         return { _id, name, thumbImg, rating };

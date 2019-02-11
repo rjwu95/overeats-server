@@ -1,6 +1,5 @@
 const Restaurant = require('../models/restaurant');
 const categoryList = require('./category');
-const addressList = require('./address');
 const express = require('express');
 const mongoose = require('mongoose');
 const router = express.Router();
@@ -9,7 +8,7 @@ router.get('/:category/:address', (req, res) => {
   let { category, address } = req.params;
   // find category.js
   category = categoryList[category];
-  address = addressList[address];
+  address = decodeURI(address);
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
   });
@@ -21,15 +20,11 @@ router.get('/:category/:address', (req, res) => {
     //check there's same category
 
     Restaurant.find({ category, address }, (err, rest) => {
-      let arr = rest.map(el => {
-        let { _id, name, thumbImg, rating } = el;
-        return { _id, name, thumbImg, rating };
-      });
       if (err) {
         return res.status(500).json({ error: err });
       }
       res.writeHead(200);
-      res.end(JSON.stringify(arr));
+      res.end(JSON.stringify(rest));
       return;
     });
   });

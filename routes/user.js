@@ -108,8 +108,9 @@ router.post('/signinfo', (req, res) => {
     User.find({ email }, async (err, user) => {
       // if email is exist
       if (user.length > 0) {
-        let { name, email, phoneNumber } = user[0];
-        res.end(JSON.stringify({ name, email, phoneNumber }));
+        let { name, email, phoneNumber, ordered } = user[0];
+        console.log(user);
+        res.end(JSON.stringify({ name, email, phoneNumber, ordered }));
       } else {
         //if email is non-exist
         res.writeHead(401);

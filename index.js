@@ -13,7 +13,7 @@ app.get('/', (req, res) => {
   res.end('Hello over eats!');
 });
 app.use('/users', userRouter);
-app.use('/restaurant', restRouter);
+app.use('/restaurants', restRouter);
 app.listen(8080, () => console.log('Listening on port 8080!'));
 
 module.exports = app;

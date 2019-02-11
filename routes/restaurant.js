@@ -17,13 +17,15 @@ router.get('/:category', (req, res) => {
     console.log('we are connected!');
     //check there's same category
 
-    Restaurant.find({ category: category }, async (err, rest) => {
+    Restaurant.find({ category }, async (err, rest) => {
+      console.log('finding DB~');
       // find category.js
       if (err) {
         return res.status(500).json({ error: err });
       }
       res.writeHead(200);
       res.end(JSON.stringify(rest));
+      return;
     });
   });
 });

@@ -6,6 +6,7 @@ const router = express.Router();
 
 router.get('/:category', (req, res) => {
   let { category } = req.params;
+  // find category.js
   category = list[category];
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
@@ -19,7 +20,6 @@ router.get('/:category', (req, res) => {
 
     Restaurant.find({ category }, async (err, rest) => {
       console.log('finding DB~');
-      // find category.js
       if (err) {
         return res.status(500).json({ error: err });
       }

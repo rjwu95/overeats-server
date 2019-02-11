@@ -1,10 +1,4 @@
-var mongoose = require('mongoose');
-
-var Schema = mongoose.Schema;
-
-var menuSchema = new Schema({
+exports.menuSchema = {
   name: String,
-  price: Number
-});
-
-module.exports = mongoose.model('menus', menuSchema);
+  price: String
+};

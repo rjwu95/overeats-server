@@ -21,6 +21,11 @@ router.get('/:category/:address', (req, res) => {
     //check there's same category
 
     Restaurant.find({ category, address }, async (err, rest) => {
+      let arr = rest.map(el => {
+        let { _id, name, thumbImg, rating } = el;
+        return { _id, name, thumbImg, rating };
+      });
+      console.log(arr);
       console.log('finding DB~');
       if (err) {
         return res.status(500).json({ error: err });
@@ -31,5 +36,4 @@ router.get('/:category/:address', (req, res) => {
     });
   });
 });
-
 module.exports = router;

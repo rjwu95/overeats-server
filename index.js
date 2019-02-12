@@ -8,14 +8,6 @@ const app = express();
 app.use(express.static('dist'));
 app.use(bodyParser.json());
 app.use(cors());
-app.all('/*', function(req, res, next) {
-  res.writeHead(200, {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'content-type, accept',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS'
-  });
-  next();
-});
 app.get('/', (req, res) => {
   res.statusCode = 200;
   res.end('Hello over eats!');

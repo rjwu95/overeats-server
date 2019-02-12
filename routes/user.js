@@ -8,10 +8,6 @@ const router = express.Router();
 /* Sign In */
 router.post('/signin', (req, res) => {
   //connect with database
-  if ('OPTIONS' === req.method) {
-    res.writeHead(200);
-    res.end();
-  }
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
   });

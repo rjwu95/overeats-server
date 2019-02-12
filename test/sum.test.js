@@ -1,43 +1,60 @@
 const request = require('request');
 
-let testURI = 'http://ec2-34-201-173-255.compute-1.amazonaws.com:8080/';
-
 test('check the sever is on', () => {
-  request(testURI, (err, res, body) => {
-    expect(body).toBe('Hello over eats!');
-  });
+  request(
+    'http://ec2-34-201-173-255.compute-1.amazonaws.com:8080/',
+    (err, res, body) => {
+      expect(body).toBe('Hello over eats!');
+    }
+  );
 });
 
 test('check signup and signin', () => {
-  request.post(
-    testURI + 'users/signup',
-    {
-      json: {
-        email: 'hello@gmail.com',
-        password: '1234',
-        name: 'test',
-        phoneNumber: '010-9090-9090'
-      }
-    },
-    function(error, response, body) {
-      expect(response.statusCode).toBe(200);
-      expect(body).toBe('nice to meet you');
-    }
-  );
+  //   request.post(
+  //     'http://ec2-34-201-173-255.compute-1.amazonaws.com:8080/users/signup',
+  //     {
+  //       json: {
+  //         email: 'sello@gmail.com',
+  //         password: '1234',
+  //         name: 'test',
+  //         phoneNumber: '010-7090-9090'
+  //       }
+  //     },
+  //     function(error, response, body) {
+  //       expect(response.statusCode).toBe(200);
+  //       expect(body).toBe('nice to meet you');
+  //     }
+  //   );
 
   request.post(
-    testURI + 'users/signin/',
+    'http://ec2-34-201-173-255.compute-1.amazonaws.com:8080/users/signin/',
     {
       json: {
-        email: 'hello@gmail.com',
+        email: 'xello@gmail.com',
         password: '1234'
       }
     },
-    function(error, response, body) {
-      expect(response.statusCode).toBe(200);
-      expect(body).toBe('Login!');
+    async function(error, response, body) {
+      await expect(response.statusCode).toBe(200);
+      await expect(body).toBe('Login!');
     }
   );
 });
+
+// test('check sign out', () => {
+//   request.post(
+//     'http://ec2-34-201-173-255.compute-1.amazonaws.com:8080/users/signout',
+//     {
+//       json: {
+//         email: 'xello@gmail.com',
+//         phoneNumber: '010-8090-9090'
+//       }
+//     },
+//     (err, res, body) => {
+//       expect(res.statusCode).toBe(200);
+//       // expect(body).toBe('ok');
+//     }
+//   );
+// });
 
 // test('check singin', () => {});

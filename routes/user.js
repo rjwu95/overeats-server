@@ -106,13 +106,13 @@ router.post('/signout', (req, res) => {
   db.once('open', function() {
     console.log('we are connected!');
     //check there's same phoneNumber
-    User.remove({ email, phoneNumber }, (err, user) => {
-      if (err) {
-        return res.status(500).json({ error: err });
-      }
-      res.writeHead(200);
-      res.end('ok');
-    });
+    // User.remove({ email, phoneNumber }, (err, user) => {
+    //   if (err) {
+    //     return res.status(500).json({ error: err });
+    //   }
+    // });
+    res.writeHead(200);
+    res.end('ok');
   });
 });
 

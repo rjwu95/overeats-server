@@ -1,5 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const config = require('./config');
 
 const userRouter = require('./routes/user');
 const restRouter = require('./routes/restaurant');
@@ -7,6 +8,7 @@ const app = express();
 
 app.use(express.static('dist'));
 app.use(bodyParser.json());
+app.set('jwt-secret', config.secret);
 
 app.get('/', (req, res) => {
   res.statusCode = 200;

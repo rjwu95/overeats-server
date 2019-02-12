@@ -8,7 +8,7 @@ const router = express.Router();
 /* Sign In */
 router.post('/signin', (req, res) => {
   //connect with database
-  res.header(cors);
+  res.header = cors;
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
   });

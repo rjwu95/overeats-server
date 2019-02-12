@@ -7,9 +7,9 @@ const app = express();
 
 app.use(express.static('dist'));
 app.use(bodyParser.json());
+app.use(cors());
 app.all('/*', function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With');
+  res.writeHead(200, { 'Access-Control-Allow-Origin': '*' });
   next();
 });
 app.get('/', (req, res) => {

@@ -29,8 +29,8 @@ exports.signin = (req, res) => {
             },
             (err, token) => {
               if (err) console.log(err);
-              res.writeHead(200);
-              res.end(JSON.stringify({ token }));
+              res.writeHead(200, { token });
+              res.end('sign in!');
             }
           );
         } else {

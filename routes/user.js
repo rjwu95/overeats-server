@@ -9,6 +9,7 @@ const router = express.Router();
 /* Sign In */
 router.post('/signin', (req, res) => {
   //connect with database
+	
   mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
     useNewUrlParser: true
   });
@@ -43,8 +44,9 @@ router.post('/signin', (req, res) => {
               },
               (err, token) => {
                 if (err) console.log(err);
-                res.writeHead(200);
-                res.end(JSON.stringify({ token }));
+                res.writeHead(200,{token});
+                res.end('ok');
+
 	      }
             );
           } else {

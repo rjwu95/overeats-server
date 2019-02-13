@@ -18,6 +18,7 @@ router.post('/signin', (req, res) => {
   db.once('open', function() {
     console.log('we are connect!');
     const { email, password } = req.body;
+	  console.log(email)
     const secret = req.app.get('jwt-secret');
 
     User.find({ email }, async (err, user) => {
@@ -44,7 +45,7 @@ router.post('/signin', (req, res) => {
                 if (err) console.log(err);
                 res.writeHead(200);
                 res.end(JSON.stringify({ token }));
-              }
+	      }
             );
           } else {
             // if password is wrong

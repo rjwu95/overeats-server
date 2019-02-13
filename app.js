@@ -45,7 +45,9 @@ app.listen(port, () => console.log(`Listening on port ${port}!`));
 /* =======================
     CONNECT TO MONGODB SERVER
 ==========================*/
-mongoose.connect(config.mongodbUri);
+mongoose.connect(config.mongodbUri, {
+  useNewUrlParser: true
+});
 const db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', () => {

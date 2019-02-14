@@ -51,7 +51,7 @@ exports.signin = (req, res) => {
 
 /* Sign Up */
 exports.signup = (req, res) => {
-  let { name, email, password, phoneNumber } = req.body;
+  let { name, email, password, phoneNumber, restaurantKey } = req.body;
   //check there's same phoneNumber
   User.find({ phoneNumber }, async (err, user) => {
     if (err) {
@@ -79,7 +79,7 @@ exports.signup = (req, res) => {
           await bcrypt.hash(password, 10, (err, hash) => {
             if (err) return console.log(err);
             password = hash;
-            User.create({ name, email, password, phoneNumber });
+            User.create({ name, email, password, phoneNumber, restaurantKey });
           });
           res.writeHead(200);
           res.end('nice to meet you');

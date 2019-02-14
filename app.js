@@ -1,16 +1,17 @@
 /* =======================
     LOAD THE DEPENDENCIES
 ==========================*/
-const express = require('express');
+const app = require('express')();
 const bodyParser = require('body-parser');
+const server = app.listen(process.env.PORT || 8080);
 const mongoose = require('mongoose');
+var io = require('socket.io')(server);
 const cors = require('cors');
 
 /* =======================
     LOAD THE CONFIG
 ==========================*/
 const config = require('./config');
-const port = process.env.PORT || 8080;
 
 /* =======================
     LOAD THE ROUTER
@@ -18,16 +19,14 @@ const port = process.env.PORT || 8080;
 const userRouter = require('./routes/user/');
 const restRouter = require('./routes/restaurant');
 
-/* =======================
-    EXPRESS CONFIGURATION
-==========================*/
-const app = express();
-
 // parse JSON and url-encoded query
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
 // set the secret key variable for jwt
 app.set('jwt-secret', config.secret);
+// set the io
+app.set('socketio', io);
 // handle cors error
 app.use(cors());
 
@@ -40,8 +39,9 @@ app.get('/', (req, res) => {
 app.use('/users', userRouter);
 app.use('/restaurants', restRouter);
 
-app.listen(port, () => console.log(`Listening on port ${port}!`));
-
+io.on('connection', socket => {
+  console.log('connected to socket io');
+});
 /* =======================
     CONNECT TO MONGODB SERVER
 ==========================*/

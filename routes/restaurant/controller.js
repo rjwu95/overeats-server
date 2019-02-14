@@ -17,3 +17,12 @@ exports.category = (req, res) => {
     return;
   });
 };
+
+/* Payment */
+exports.payment = (req, res) => {
+  let { _id, address, orderList } = req.body;
+
+  let io = req.app.get('socketio');
+  io.emit(_id, { address, orderList });
+  res.end('ok');
+};

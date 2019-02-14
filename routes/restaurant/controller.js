@@ -1,5 +1,6 @@
 const categoryList = require('../category');
 const Restaurant = require('../../models/restaurant');
+const jwt = require('jsonwebtoken');
 
 /* category & information */
 exports.category = (req, res) => {
@@ -20,10 +21,19 @@ exports.category = (req, res) => {
 
 /* Payment */
 exports.payment = (req, res) => {
-  let { _id } = req.body;
-  let io = req.app.get('socketio');
-  io.emit(_id, req.body);
-  res.end('ok');
+  const token = req.headers['x-access-token'] || req.query.token;
+  const order_id = 200712344578;
+  const date = new Date(new Date().getTime()).toString();
+  //식당ID, 주문내역 ={ 주문메뉴,주문개수,주문가격}
+  let { _id, ordered } = req.body;
+  io.emit(_id, {
+    phoneNumber,
+    ordered,
+    name,
+    order_id,
+    date
+  });
+  res.end(JSON.stringify({ order_id, ordered, date }));
 };
 
 /* Finish delivery */

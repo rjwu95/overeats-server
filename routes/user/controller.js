@@ -27,7 +27,7 @@ exports.signin = (req, res) => {
             },
             secret,
             {
-              expiresIn: '10m',
+		    expiresIn: '1h',
               issuer: 'overEats',
               subject: 'userInfo'
             },

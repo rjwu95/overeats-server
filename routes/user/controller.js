@@ -9,6 +9,7 @@ exports.signin = (req, res) => {
   const secret = req.app.get('jwt-secret');
   User.find({ email }, async (err, user) => {
     // if email is exist
+    let restaurantKey = user[0].restaurantKey;
     if (user.length > 0) {
       // check the password match
       await bcrypt.compare(password, user[0].password, async (err, bool) => {
@@ -30,7 +31,7 @@ exports.signin = (req, res) => {
             (err, token) => {
               if (err) console.log(err);
               res.writeHead(200, { token });
-              res.end('sign in!');
+              res.end(JSON.stringify({ restaurantKey, message: 'ok' }));
             }
           );
         } else {

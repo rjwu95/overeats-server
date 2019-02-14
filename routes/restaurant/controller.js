@@ -1,7 +1,7 @@
 const categoryList = require('../category');
 const Restaurant = require('../../models/restaurant');
 const jwt = require('jsonwebtoken');
-
+const User = require('../../models/users');
 /* category & information */
 exports.category = (req, res) => {
   let { category, address } = req.params;
@@ -21,20 +21,58 @@ exports.category = (req, res) => {
 
 /* Payment */
 exports.payment = (req, res) => {
-  const token = req.headers['x-access-token'] || req.query.token;
+  // Get token and socket io
+  const token = req.headers['x-access-token'];
+  let io = req.app.get('socketio');
+
+  //Temporary order number (will be change)
   const order_id = 200712344578;
-  const date = new Date(new Date().getTime()).toString();
-  //식당ID, 주문내역 ={ 주문메뉴,주문개수,주문가격}
-  let { _id, ordered } = req.body;
-  io.emit(_id, {
-    phoneNumber,
-    ordered,
-    name,
-    order_id,
-    date
+
+  let { _id, restaurantName, orderList } = req.body;
+  // token does not exist
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      message: 'not logged in'
+    });
+  }
+  jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
+    if (err) {
+      // if it has failed to verify, it will return an error message
+      return res.status(401).json({
+        success: false,
+        message: err.message
+      });
+    } else {
+      // Get the phone number of the person ordered
+      const { phoneNumber } = decoded;
+      // object that will store in user's database
+      let orderObj = { restaurantName, orderList };
+      // object that will send to restaurant
+      let restaurantObj = { phoneNumber, order_id, ...req.body };
+      // if token is valid, insert data in user's database
+      User.findOneAndUpdate(
+        { phoneNumber },
+        { $push: { ordered: orderObj } },
+        { new: true },
+        (err, doc) => {
+          if (err) {
+            return res.status(401).json({
+              success: false,
+              message: err.message
+            });
+          }
+          io.emit(_id, restaurantObj);
+          res.end(JSON.stringify({ order_id }));
+        }
+      );
+    }
   });
-  res.end(JSON.stringify({ order_id, ordered, date }));
+  res.end('order is success');
 };
 
 /* Finish delivery */
-exports.delivery = (req, res) => {};
+exports.delivery = (req, res) => {
+  let io = req.app.get('socketio');
+  io.emit(_id, req.body);
+};

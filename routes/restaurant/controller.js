@@ -20,9 +20,11 @@ exports.category = (req, res) => {
 
 /* Payment */
 exports.payment = (req, res) => {
-  let { _id, address, orderList } = req.body;
-
+  let { _id } = req.body;
   let io = req.app.get('socketio');
-  io.emit(_id, { address, orderList });
+  io.emit(_id, req.body);
   res.end('ok');
 };
+
+/* Finish delivery */
+exports.delivery = (req, res) => {};

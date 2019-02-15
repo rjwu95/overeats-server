@@ -79,7 +79,8 @@ exports.payment = (req, res) => {
 /* Finish delivery */
 exports.delivery = (req, res) => {
   let io = req.app.get('socketio');
-  console.log('deliver is finished!: ', req.params);
+  let { order_id } = req.params;
   // req.params = restaurantKey, order_id
   io.emit(order_id, req.params);
+  res.end();
 };

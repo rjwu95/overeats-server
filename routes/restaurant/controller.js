@@ -49,9 +49,8 @@ exports.payment = (req, res) => {
 
       // date Create
       let date = new Date();
-      date = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
-      date = date + `${date.getDate()}일 ${date.getHours()}시`;
-      date = date + `${date.getMinutes()}분`;
+      date = `${date.getFullYear()}년 ${date.getMonth() +
+        1}월 ${date.getDate()}일 ${date.getHours()}시 ${date.getMinutes()}분`;
       // order_id Create
       let order_id = Number(String(Date.now()).slice(5));
       order_id = order_id + phoneNumber.slice(4, 8);

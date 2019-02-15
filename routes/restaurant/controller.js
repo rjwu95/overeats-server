@@ -44,10 +44,10 @@ exports.payment = (req, res) => {
         message: err.message
       });
     } else {
-      // Get the phone number of the person ordered
-      const { phoneNumber } = decoded;
       // object that will store in user's database
       let orderObj = { restaurantName, orderList };
+      // Get the phoneNumber of the person ordered
+      const { phoneNumber } = decoded;
       // object that will send to restaurant
       let restaurantObj = { phoneNumber, order_id, ...req.body };
       // if token is valid, insert data in user's database
@@ -68,11 +68,12 @@ exports.payment = (req, res) => {
       );
     }
   });
-  res.end('order is success');
 };
 
 /* Finish delivery */
 exports.delivery = (req, res) => {
   let io = req.app.get('socketio');
-  io.emit(_id, req.body);
+  let { order_id } = req.params;
+
+  io.emit(order_id, req.body);
 };

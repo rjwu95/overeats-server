@@ -9,11 +9,9 @@ exports.signin = (req, res) => {
   const secret = req.app.get('jwt-secret');
   User.find({ email }, async (err, user) => {
     // if email is exist
-    let restaurantKey;
-    if (!!user[0]) {
-      restaurantKey = user[0].restaurantKey;
-    }
+
     if (user.length > 0) {
+      let restaurantKey = user[0].restaurantKey;
       // check the password match
       await bcrypt.compare(password, user[0].password, async (err, bool) => {
         if (err) return console.log(err);

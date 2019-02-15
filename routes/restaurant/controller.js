@@ -48,14 +48,14 @@ exports.payment = (req, res) => {
       // object that will send to restaurant
 
       // date Create
-      let date = new Date();
-      date = `${date.getFullYear()}년 ${date.getMonth() +
-        1}월 ${date.getDate()}일 ${date.getHours()}시 ${date.getMinutes()}분`;
+      let _date = new Date();
+      _date = `${_date.getFullYear()}년 ${_date.getMonth() +
+        1}월 ${_date.getDate()}일 ${_date.getHours()}시 ${_date.getMinutes()}분`;
       // order_id Create
       let order_id = Number(String(Date.now()).slice(5));
       order_id = order_id + phoneNumber.slice(4, 8);
 
-      let restaurantObj = { phoneNumber, order_id, date, ...req.body };
+      let restaurantObj = { phoneNumber, order_id, _date, ...req.body };
       // if token is valid, insert data in user's database
       User.findOneAndUpdate(
         { phoneNumber },

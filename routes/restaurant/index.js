@@ -2,6 +2,6 @@ const router = require('express').Router();
 const controller = require('./controller');
 
 router.get('/:category/:address', controller.category);
+router.get('/delivery/:order_id', controller.delivery);
 router.post('/payment', controller.payment);
-router.get('/delivery', controller.delivery);
 module.exports = router;

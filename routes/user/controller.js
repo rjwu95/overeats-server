@@ -9,7 +9,6 @@ exports.signin = (req, res) => {
   const secret = req.app.get('jwt-secret');
   User.find({ email }, async (err, user) => {
     // if email is exist
-
     if (user.length > 0) {
       let restaurantKey = user[0].restaurantKey;
       // check the password match
@@ -21,18 +20,20 @@ exports.signin = (req, res) => {
           await jwt.sign(
             {
               _id: user[0]._id,
-              email: user[0].email
+              email: user[0].email,
+              phoneNumber: user[0].phoneNumber
             },
             secret,
             {
-              expiresIn: '10m',
+              expiresIn: '1h',
               issuer: 'overEats',
               subject: 'userInfo'
             },
             (err, token) => {
               if (err) console.log(err);
               res.writeHead(200, { token });
-              restaurantKey !== null
+              let restaurantKey = user[0].restaurantKey;
+              restaurantKey
                 ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
                 : res.end('ok');
             }

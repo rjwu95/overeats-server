@@ -25,9 +25,6 @@ exports.payment = (req, res) => {
   const token = req.headers['x-access-token'];
   let io = req.app.get('socketio');
 
-  //Temporary order number (will be change)
-  const order_id = 200712344578;
-
   let { _id, restaurantName, orderList } = req.body;
   // token does not exist
   if (!token) {
@@ -49,7 +46,17 @@ exports.payment = (req, res) => {
       // Get the phoneNumber of the person ordered
       const { phoneNumber } = decoded;
       // object that will send to restaurant
-      let restaurantObj = { phoneNumber, order_id, ...req.body };
+
+      // date Create
+      let date = new Date();
+      date = `${date.getFullYear()}년 ${date.getMonth() + 1}월`;
+      date = date + `${date.getDate()}일 ${date.getHours()}시`;
+      date = date + `${date.getMinutes()}분`;
+      // order_id Create
+      let order_id = Number(String(Date.now()).slice(5));
+      order_id = order_id + phoneNumber.slice(4, 8);
+
+      let restaurantObj = { phoneNumber, order_id, date, ...req.body };
       // if token is valid, insert data in user's database
       User.findOneAndUpdate(
         { phoneNumber },

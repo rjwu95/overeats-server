@@ -10,6 +10,7 @@ exports.signin = (req, res) => {
   User.find({ email }, async (err, user) => {
     // if email is exist
     if (user.length > 0) {
+      let restaurantKey = user[0].restaurantKey;
       // check the password match
       await bcrypt.compare(password, user[0].password, async (err, bool) => {
         if (err) return console.log(err);

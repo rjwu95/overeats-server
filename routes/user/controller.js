@@ -29,24 +29,26 @@ exports.signin = (req, res) => {
             },
             (err, token) => {
               if (err) console.log(err);
-              res.writeHead(200, { token });
+              // DON'T PUT STATUS CODE AND OBJECT TOGETHER IN writeHead
+              // put token in header
+              res.set('token', token);
               let restaurantKey = user[0].restaurantKey;
               restaurantKey
                 ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
-                : res.end('ok');
+                : res.status(200).send('okay');
             }
           );
         } else {
           // if password is wrong
           res.writeHead(401);
-          res.end('Please check your email or password');
+          res.send('Please check your email or password');
           return;
         }
       });
     } else {
       //if email is non-exist
       res.writeHead(401);
-      res.end('Please check your email or password');
+      res.send('Please check your email or password');
       return;
     }
   });

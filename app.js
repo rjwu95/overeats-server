@@ -20,7 +20,8 @@ const userRouter = require('./routes/user/');
 const restRouter = require('./routes/restaurant');
 
 // parse JSON and url-encoded query
-app.use(bodyParser.urlencoded({ extended: false }));
+// if extended is true, it can bring nested object successfully
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // set the secret key variable for jwt
@@ -32,7 +33,7 @@ app.use(cors());
 
 // index page, just for testing
 app.get('/', (req, res) => {
-  res.end('Hello over eats!');
+  res.send('Hello over eats!');
 });
 
 // configure api router

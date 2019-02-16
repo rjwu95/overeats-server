@@ -1,6 +1,8 @@
-const categoryList = require('../category');
 const Restaurant = require('../../models/restaurant');
 const User = require('../../models/users');
+// const {
+//   Types: { ObjectId }
+// } = require('mongoose');
 
 /* category & information */
 exports.category = (req, res) => {
@@ -64,4 +66,76 @@ exports.delivery = (req, res) => {
   // req.params = restaurantKey, order_id
   io.emit(order_id, req.params);
   res.end();
+};
+
+// 클라이언트에서 별점, 코멘트, 토큰,레스토랑키를 받고 유저정보를 디비에서
+//확인하고, 레스토랑 디비에 유저이메일 앞부분과 별점,코멘트, 시간을 넣어준다.
+exports.review = (req, res) => {
+  const token = req.headers['x-access-token'];
+  let { rating, content, restaurantKey } = req.body;
+  //바디가 비어있을경우
+  if (!!rating || !!content) {
+    res.status(500).end();
+    return;
+  }
+  // token does not exist
+  if (!token) {
+    return res.status(403).json({
+      success: false,
+      message: 'not logged in'
+    });
+  }
+  jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
+    if (err) {
+      // if it has failed to verify, it will return an error message
+      return res.status(401).json({
+        success: false,
+        message: err.message
+      });
+    } else {
+      // Get the email of the person ordered
+      const { email } = decoded;
+
+      // function emailIsValid (email) {
+      //return /\S+@\S+\.\S+/.test(email)
+      //}
+
+      // 정규표현식으로 이메일네임부분 잘라내기
+      let i = /\S+@/.exec(email);
+      let name = i[0].slice(0, i.length - 2);
+      let review = { name, rating, content };
+      // 레스토랑 DB에 리뷰 넣기
+      Restaurant.findOneAndUpdate(
+        { restaurantKey },
+        { $push: { reviews: review } },
+        { new: true },
+        (err, doc) => {
+          let { rating, numberOfOrder } = doc;
+          let averageRating =
+            (rating * numberOfOrder + review.rating) / (numberOfOrder + 1);
+
+          // 레스토랑 디비의 평점남기기
+          Restaurant.findOneAndUpdate(
+            { restaurantKey },
+            {
+              $set: {
+                rating: averageRating,
+                numberOfOrder: numberOfOrder + 1
+              }
+            },
+            { new: true },
+            (err, doc) => {
+              if (err) {
+                return res.status(401).json({
+                  success: false,
+                  message: err.message
+                });
+              }
+              res.status(200).json('ok');
+            }
+          );
+        }
+      );
+    }
+  });
 };

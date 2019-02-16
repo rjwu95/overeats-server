@@ -2,9 +2,9 @@ const categoryList = require('../category');
 const Restaurant = require('../../models/restaurant');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/users');
-const {
-  Types: { ObjectId }
-} = require('mongoose');
+// const {
+//   Types: { ObjectId }
+// } = require('mongoose');
 
 /* category & information */
 exports.category = (req, res) => {
@@ -30,7 +30,7 @@ exports.payment = (req, res) => {
   let io = req.app.get('socketio');
 
   let { _id, restaurantName, orderList } = req.body;
-  _id = ObjectId(_id);
+  // _id = ObjectId(_id);
   // token does not exist
   if (!token) {
     return res.status(403).json({

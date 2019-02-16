@@ -2,6 +2,9 @@ const categoryList = require('../category');
 const Restaurant = require('../../models/restaurant');
 const jwt = require('jsonwebtoken');
 const User = require('../../models/users');
+const {
+  Types: { ObjectId }
+} = require('mongoose');
 
 /* category & information */
 exports.category = (req, res) => {
@@ -27,6 +30,7 @@ exports.payment = (req, res) => {
   let io = req.app.get('socketio');
 
   let { _id, restaurantName, orderList } = req.body;
+  _id = ObjectId(_id);
   // token does not exist
   if (!token) {
     return res.status(403).json({
@@ -92,7 +96,7 @@ exports.delivery = (req, res) => {
 //확인하고, 레스토랑 디비에 유저이메일 앞부분과 별점,코멘트, 시간을 넣어준다.
 exports.review = (req, res) => {
   const token = req.headers['x-access-token'];
-  let { rating, content } = req.body;
+  let { rating, content, restaurantKey } = req.body;
   //바디가 비어있을경우
   if (!!rating || !!content) {
     res.status(500).end();
@@ -113,62 +117,49 @@ exports.review = (req, res) => {
         message: err.message
       });
     } else {
-      // Get the phoneNumber of the person ordered
-      const { phoneNumber } = decoded;
+      // Get the email of the person ordered
+      const { email } = decoded;
 
-      // if token is valid, insert data in user's database
-      User.find({ phoneNumber }, (err, user) => {
-        // if email is exist
-        if (user.length > 0) {
-          // function emailIsValid (email) {
-          //return /\S+@\S+\.\S+/.test(email)
-          //}
+      // function emailIsValid (email) {
+      //return /\S+@\S+\.\S+/.test(email)
+      //}
 
-          let { email, restaurantKey } = user[0];
-          // 정규표현식으로 이메일네임부분 잘라내기
-          let i = /\S+@/.exec(email);
-          let name = i[0].slice(0, i.length - 2);
+      // 정규표현식으로 이메일네임부분 잘라내기
+      let i = /\S+@/.exec(email);
+      let name = i[0].slice(0, i.length - 2);
+      let review = { name, rating, content };
+      // 레스토랑 DB에 리뷰 넣기
+      Restaurant.findOneAndUpdate(
+        { restaurantKey },
+        { $push: { reviews: review } },
+        { new: true },
+        (err, doc) => {
+          let { rating, numberOfOrder } = doc;
+          let averageRating =
+            (rating * numberOfOrder + review.rating) / (numberOfOrder + 1);
 
-          let review = { name, rating, content };
-          // 레스토랑 DB에 리뷰 넣기
+          // 레스토랑 디비의 평점남기기
           Restaurant.findOneAndUpdate(
             { restaurantKey },
-            { $push: { reviews: review } },
+            {
+              $set: {
+                rating: averageRating,
+                numberOfOrder: numberOfOrder + 1
+              }
+            },
             { new: true },
             (err, doc) => {
-              let { rating, numberOfOrder } = doc;
-              let averageRating =
-                (rating * numberOfOrder + review.rating) / (numberOfOrder + 1);
-
-              // 레스토랑 디비의 평점남기기
-              Restaurant.findOneAndUpdate(
-                { restaurantKey },
-                {
-                  $set: {
-                    rating: averageRating,
-                    numberOfOrder: numberOfOrder + 1
-                  }
-                },
-                { new: true },
-                (err, doc) => {
-                  if (err) {
-                    return res.status(401).json({
-                      success: false,
-                      message: err.message
-                    });
-                  }
-                  res.status(200).json('ok');
-                }
-              );
+              if (err) {
+                return res.status(401).json({
+                  success: false,
+                  message: err.message
+                });
+              }
+              res.status(200).json('ok');
             }
           );
-        } else {
-          //if email is non-exist
-          res.writeHead(401);
-          res.end('Please login info');
-          return;
         }
-      });
+      );
     }
   });
 };

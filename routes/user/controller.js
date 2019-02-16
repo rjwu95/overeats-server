@@ -1,58 +1,6 @@
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../../models/users');
-
-/* Sign In */
-exports.signin = (req, res) => {
-  const { email, password } = req.body;
-  const secret = req.app.get('jwt-secret');
-  User.find({ email }, async (err, user) => {
-    // if email is exist
-    if (user.length > 0) {
-      // check the password match
-      await bcrypt.compare(password, user[0].password, async (err, bool) => {
-        if (err) return console.log(err);
-        if (bool) {
-          // if password is correct
-          // generate jwt
-          await jwt.sign(
-            {
-              _id: user[0]._id,
-              email: user[0].email,
-              phoneNumber: user[0].phoneNumber
-            },
-            secret,
-            {
-              expiresIn: '1h',
-              issuer: 'overEats',
-              subject: 'userInfo'
-            },
-            (err, token) => {
-              if (err) console.log(err);
-              // DON'T PUT STATUS CODE AND OBJECT TOGETHER IN writeHead
-              // put token in header
-              res.set('token', token);
-              let restaurantKey = user[0].restaurantKey;
-              restaurantKey
-                ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
-                : res.status(200).send('okay');
-            }
-          );
-        } else {
-          // if password is wrong
-          res.writeHead(401);
-          res.send('Please check your email or password');
-          return;
-        }
-      });
-    } else {
-      //if email is non-exist
-      res.writeHead(401);
-      res.send('Please check your email or password');
-      return;
-    }
-  });
-};
+const jwt = require('jsonwebtoken');
 
 /* Sign Up */
 exports.signup = (req, res) => {
@@ -95,72 +43,94 @@ exports.signup = (req, res) => {
   });
 };
 
-/* Info */
-exports.info = (req, res) => {
-  const token = req.headers['x-access-token'] || req.query.token;
-  // token does not exist
-  if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: 'not logged in'
-    });
-  }
+/* Sign In */
+exports.signin = (req, res) => {
+  const { email, password } = req.body;
+  const secret = req.app.get('jwt-secret');
 
-  jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
-    if (err) {
-      // if it has failed to verify, it will return an error message
-      return res.status(401).json({
-        success: false,
-        message: err.message
-      });
-    } else {
-      const { email } = decoded;
-      // if token is valid, it will respond with its info
-      User.find({ email }, async (err, user) => {
-        // if email is exist
-        if (user.length > 0) {
-          let { name, email, phoneNumber, ordered } = user[0];
-          res.end(JSON.stringify({ name, email, phoneNumber, ordered }));
+  User.findOneByEmail(email).then(async user => {
+    // if email is exist
+    if (user) {
+      // check the password match
+      await bcrypt.compare(password, user.password, async (err, bool) => {
+        if (err) return console.log(err);
+        if (bool) {
+          // if password is correct
+          // generate jwt
+          makeToken(user, secret).then(token => {
+            // DON'T PUT STATUS CODE AND OBJECT TOGETHER IN writeHead
+            // put token in header
+            res.set('token', token);
+            let restaurantKey = user.restaurantKey;
+            restaurantKey
+              ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
+              : res.status(200).send('okay');
+          });
         } else {
-          //if email is non-exist
+          // if password is wrong
           res.writeHead(401);
-          res.end('Please login info');
+          res.send('Please check your email or password');
           return;
         }
       });
+    } else {
+      //if email is non-exist
+      res.status(401).send('Please check your email or password');
+      return;
+    }
+  });
+};
+
+/* Info */
+exports.info = (req, res) => {
+  const { email } = req.decode;
+  // if token is valid, it will respond with its info
+  User.find({ email }, async (err, user) => {
+    // if email is exist
+    if (user.length > 0) {
+      let { name, email, phoneNumber, ordered } = user[0];
+      res.end(JSON.stringify({ name, email, phoneNumber, ordered }));
+    } else {
+      //if email is non-exist
+      res.writeHead(401);
+      res.end('Please login info');
+      return;
     }
   });
 };
 
 /* Sign Out*/
 exports.signout = (req, res) => {
-  const token = req.headers['x-access-token'] || req.query.token;
-  // token does not exist
-  if (!token) {
-    return res.status(403).json({
-      success: false,
-      message: 'not logged in'
-    });
-  }
-
-  jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
+  const { email } = req.decode;
+  // if token is valid, it will respond with its info
+  User.deleteOne({ email }, async (err, user) => {
+    console.log(user);
     if (err) {
-      // if it has failed to verify, it will return an error message
-      return res.status(401).json({
-        success: false,
-        message: err.message
-      });
-    } else {
-      const { email } = decoded;
-      // if token is valid, it will respond with its info
-      User.deleteOne({ email }, async (err, user) => {
-        console.log(user);
-        if (err) {
-          return res.status(500).json({ error: err });
-        }
-        res.writeHead(200);
-        res.end('ok');
-      });
+      return res.status(500).json({ error: err });
     }
+    res.writeHead(200);
+    res.end('ok');
   });
 };
+
+async function makeToken(user, secret) {
+  return new Promise((resolve, reject) => {
+    jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        phoneNumber: user.phoneNumber
+      },
+      secret,
+      {
+        expiresIn: '1h',
+        issuer: 'overEats',
+        subject: 'userInfo'
+      },
+      (err, token) => {
+        if (err) reject(err);
+        resolve(token);
+      }
+    );
+  });
+}

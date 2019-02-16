@@ -11,4 +11,8 @@ var userSchema = new Schema({
   restaurantKey: { type: String, default: null }
 });
 
+// find one user by using username
+userSchema.statics.findOneByEmail = function(email) {
+  return this.findOne({ email }).exec();
+};
 module.exports = mongoose.model('User', userSchema);

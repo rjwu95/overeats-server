@@ -56,16 +56,17 @@ exports.signin = (req, res) => {
         if (err) return console.log(err);
         if (bool) {
           // if password is correct
-          // generate jwt
-          makeToken(user, secret).then(token => {
-            // DON'T PUT STATUS CODE AND OBJECT TOGETHER IN writeHead
-            // put token in header
-            res.set('token', token);
-            let restaurantKey = user.restaurantKey;
-            restaurantKey
-              ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
-              : res.status(200).send('okay');
-          });
+          // generate access token
+          let access = await makeToken(user, secret, 'access');
+          let refresh = await makeToken(user, secret, 'refresh');
+          // DON'T PUT STATUS CODE AND OBJECT TOGETHER IN writeHead
+          // put token in header
+          res.set('access-token', access);
+          res.set('refresh-token', refresh);
+          let restaurantKey = user.restaurantKey;
+          restaurantKey
+            ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
+            : res.status(200).send('okay');
         } else {
           // if password is wrong
           res.writeHead(401);
@@ -113,17 +114,22 @@ exports.signout = (req, res) => {
   });
 };
 
-async function makeToken(user, secret) {
+async function makeToken(user, secret, type) {
+  let time = '2h';
+  if (type === 'refresh') {
+    time = '14d';
+  }
   return new Promise((resolve, reject) => {
     jwt.sign(
       {
         _id: user._id,
         email: user.email,
-        phoneNumber: user.phoneNumber
+        phoneNumber: user.phoneNumber,
+        type
       },
       secret,
       {
-        expiresIn: '1h',
+        expiresIn: time,
         issuer: 'overEats',
         subject: 'userInfo'
       },

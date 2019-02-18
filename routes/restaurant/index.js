@@ -6,6 +6,6 @@ router.get('/delivery/:restaurantKey/:order_id', controller.delivery);
 router.get('/:category/:address', controller.category);
 
 router.post('/payment', checkExpiredToken, checkTypeToken, controller.payment);
-router.post('/review', controller.review);
+router.post('/review', checkExpiredToken, checkTypeToken, controller.review);
 
 module.exports = router;

@@ -8,7 +8,8 @@ var userSchema = new Schema({
   password: String,
   phoneNumber: String,
   ordered: Array,
-  restaurantKey: { type: String, default: null }
+  restaurantKey: { type: String, default: null },
+  refreshToken: String
 });
 
 // find one user by using username

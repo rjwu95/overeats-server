@@ -1,8 +1,6 @@
 const Restaurant = require('../../models/restaurant');
 const User = require('../../models/users');
-// const {
-//   Types: { ObjectId }
-// } = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 /* category & information */
 exports.category = (req, res) => {
@@ -48,7 +46,7 @@ exports.payment = (req, res) => {
     { new: true },
     (err, doc) => {
       if (err) {
-        return res.status(401).json({
+        return res.status(403).json({
           success: false,
           message: err.message
         });
@@ -74,21 +72,23 @@ exports.review = (req, res) => {
   const token = req.headers['x-access-token'];
   let { rating, content, restaurantKey } = req.body;
   //바디가 비어있을경우
-  if (!!rating || !!content) {
-    res.status(500).end();
+
+  if (rating === undefined || content === undefined) {
+    res.status(400).end();
     return;
   }
   // token does not exist
   if (!token) {
-    return res.status(403).json({
+    return res.status(400).json({
       success: false,
       message: 'not logged in'
     });
   }
+
   jwt.verify(token, req.app.get('jwt-secret'), (err, decoded) => {
     if (err) {
       // if it has failed to verify, it will return an error message
-      return res.status(401).json({
+      return res.status(400).json({
         success: false,
         message: err.message
       });
@@ -105,8 +105,9 @@ exports.review = (req, res) => {
       let name = i[0].slice(0, i.length - 2);
       let review = { name, rating, content };
       // 레스토랑 DB에 리뷰 넣기
+
       Restaurant.findOneAndUpdate(
-        { restaurantKey },
+        { _id: restaurantKey },
         { $push: { reviews: review } },
         { new: true },
         (err, doc) => {
@@ -116,7 +117,7 @@ exports.review = (req, res) => {
 
           // 레스토랑 디비의 평점남기기
           Restaurant.findOneAndUpdate(
-            { restaurantKey },
+            { _id: restaurantKey },
             {
               $set: {
                 rating: averageRating,
@@ -126,7 +127,7 @@ exports.review = (req, res) => {
             { new: true },
             (err, doc) => {
               if (err) {
-                return res.status(401).json({
+                return res.status(403).json({
                   success: false,
                   message: err.message
                 });

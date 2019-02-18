@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 
 async function makeToken(user, secret, type) {
-  let time = '1m';
+  let time = '3h';
   if (type === 'refresh') {
     time = '14d';
   }

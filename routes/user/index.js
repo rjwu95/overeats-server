@@ -1,11 +1,11 @@
 const router = require('express').Router();
 const controller = require('./controller');
-const authMiddleware = require('../../middleware/auth');
+const { checkExpiredToken, checkTypeToken } = require('../../middleware/auth');
 
 router.post('/signup', controller.signup);
 router.post('/signin', controller.signin);
 
-router.get('/info', authMiddleware.checkExpiredToken, controller.info);
-router.get('/signout', authMiddleware.checkExpiredToken, controller.signout);
+router.get('/info', checkExpiredToken, checkTypeToken, controller.info);
+router.get('/signout', checkExpiredToken, checkTypeToken, controller.signout);
 
 module.exports = router;

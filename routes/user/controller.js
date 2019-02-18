@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/users');
-const jwt = require('jsonwebtoken');
+const makeToken = require('../makeToken');
 
 /* Sign Up */
 exports.signup = (req, res) => {
@@ -113,30 +113,3 @@ exports.signout = (req, res) => {
     res.end('ok');
   });
 };
-
-async function makeToken(user, secret, type) {
-  let time = '2h';
-  if (type === 'refresh') {
-    time = '14d';
-  }
-  return new Promise((resolve, reject) => {
-    jwt.sign(
-      {
-        _id: user._id,
-        email: user.email,
-        phoneNumber: user.phoneNumber,
-        type
-      },
-      secret,
-      {
-        expiresIn: time,
-        issuer: 'overEats',
-        subject: 'userInfo'
-      },
-      (err, token) => {
-        if (err) reject(err);
-        resolve(token);
-      }
-    );
-  });
-}

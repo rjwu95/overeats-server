@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../../models/users');
 const makeToken = require('../makeToken');
+const Restaurant = require('../../models/restaurant');
 
 /* Sign Up */
 exports.signup = (req, res) => {
@@ -75,10 +76,15 @@ exports.signin = (req, res) => {
                   message: err.message
                 });
               }
+
               let restaurantKey = user.restaurantKey;
-              restaurantKey
-                ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
-                : res.status(200).send('okay');
+              if (restaurantKey) {
+                Restaurant.findOne({ _id: restaurantKey }, (err, doc) => {
+                  res.end(JSON.stringify({ restaurantKey, name: doc.name }));
+                });
+              } else {
+                res.status(200).send('okay');
+              }
             }
           );
         } else {

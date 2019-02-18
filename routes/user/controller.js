@@ -63,10 +63,24 @@ exports.signin = (req, res) => {
           // put token in header
           res.set('access-token', access);
           res.set('refresh-token', refresh);
-          let restaurantKey = user.restaurantKey;
-          restaurantKey
-            ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
-            : res.status(200).send('okay');
+
+          User.findOneAndUpdate(
+            { email: user.email },
+            { $set: { refreshToken: refresh } },
+            { new: true },
+            (err, doc) => {
+              if (err) {
+                return res.status(401).json({
+                  success: false,
+                  message: err.message
+                });
+              }
+              let restaurantKey = user.restaurantKey;
+              restaurantKey
+                ? res.end(JSON.stringify({ restaurantKey, message: 'ok' }))
+                : res.status(200).send('okay');
+            }
+          );
         } else {
           // if password is wrong
           res.writeHead(401);

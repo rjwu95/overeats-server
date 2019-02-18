@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const makeToken = require('../routes/makeToken');
+const User = require('../models/users');
 
 module.exports.checkExpiredToken = (req, res, next) => {
   //read the token from the header or url
@@ -39,12 +40,22 @@ module.exports.checkExpiredToken = (req, res, next) => {
 module.exports.checkTypeToken = async (req, res, next) => {
   let { type, ...user } = req.decode;
   const secret = req.app.get('jwt-secret');
-
+  const token = req.headers['x-access-token'] || req.query.token;
+  //is function check refresh ?
+  const checkToken = async user => {
+    if (user.refreshToken === token) {
+      let access = await makeToken(user, secret, 'access');
+      res.set('access-token', access);
+      res.end();
+    } else {
+      res.end('not equal');
+    }
+  };
+  // refresh token should be only one
   if (type === 'refresh') {
-    let access = await makeToken(user, secret, 'access');
-    res.set('access-token', access);
-    res.end();
+    await User.findOneByEmail(user.email)
+      .then(checkToken)
+      .catch(err => res.end(err));
   }
-
   next();
 };

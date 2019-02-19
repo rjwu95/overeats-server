@@ -7,7 +7,7 @@ const Restaurant = require('../../models/restaurant');
 exports.signup = (req, res) => {
   let { name, email, password, phoneNumber, restaurantKey } = req.body;
   //check there's same phoneNumber
-  User.find({ phoneNumber }, async (err, user) => {
+  User.find({ phoneNumber }, (err, user) => {
     if (err) {
       return res.status(500).json({ error: err });
     }
@@ -106,7 +106,7 @@ exports.signin = (req, res) => {
 exports.info = (req, res) => {
   const { email } = req.decode;
   // if token is valid, it will respond with its info
-  User.find({ email }, async (err, user) => {
+  User.find({ email }, (err, user) => {
     // if email is exist
     if (user.length > 0) {
       let { name, email, phoneNumber, ordered } = user[0];
@@ -115,7 +115,6 @@ exports.info = (req, res) => {
       //if email is non-exist
       res.writeHead(401);
       res.end('Please login info');
-      return;
     }
   });
 };
@@ -124,8 +123,7 @@ exports.info = (req, res) => {
 exports.signout = (req, res) => {
   const { email } = req.decode;
   // if token is valid, it will respond with its info
-  User.deleteOne({ email }, async (err, user) => {
-    console.log(user);
+  User.deleteOne({ email }, (err, user) => {
     if (err) {
       return res.status(500).json({ error: err });
     }

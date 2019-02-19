@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+import { sign } from 'jsonwebtoken';
 
 async function makeToken(user, secret, type) {
   let time = '3h';
@@ -6,7 +6,7 @@ async function makeToken(user, secret, type) {
     time = '14d';
   }
   return new Promise((resolve, reject) => {
-    jwt.sign(
+    sign(
       {
         _id: user._id,
         email: user.email,
@@ -27,4 +27,4 @@ async function makeToken(user, secret, type) {
   });
 }
 
-module.exports = makeToken;
+export default makeToken;

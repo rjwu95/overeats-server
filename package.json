@@ -2,10 +2,10 @@
   "name": "overEats_server",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "jest",
-    "start": "node server.js"
+    "start": "node app.js"
   },
   "author": "",
   "license": "ISC",
@@ -20,5 +20,8 @@
     "mongoose": "^5.4.10",
     "path": "^0.12.7",
     "socket.io": "^2.2.0"
+  },
+  "devDependencies": {
+    "jest": "^24.1.0"
   }
 }

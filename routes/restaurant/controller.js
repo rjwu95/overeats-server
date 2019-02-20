@@ -14,7 +14,6 @@ exports.category = (req, res) => {
     }
     res.writeHead(200);
     res.end(JSON.stringify(data));
-    return;
   });
 };
 
@@ -73,7 +72,6 @@ exports.review = (req, res) => {
 
   if (rating === undefined || content === undefined) {
     res.status(400).end();
-    return;
   }
   // token does not exist
 

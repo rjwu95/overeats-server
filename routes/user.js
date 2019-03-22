@@ -2,13 +2,13 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
 const User = require('../models/users');
-
+const mongodbUri = require('../config.json').mongodbUri;
 const router = express.Router();
 
 /* Sign In */
 router.post('/signin', (req, res) => {
   //connect with database
-  mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
+  mongoose.connect(mongodbUri, {
     useNewUrlParser: true
   });
   let db = mongoose.connection;
@@ -46,7 +46,7 @@ router.post('/signin', (req, res) => {
 /* Sign Up */
 router.post('/signup', (req, res) => {
   //connect with database
-  mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
+  mongoose.connect(mongodbUri, {
     useNewUrlParser: true
   });
   let db = mongoose.connection;
@@ -97,7 +97,7 @@ router.post('/signup', (req, res) => {
 /* Sign Info */
 router.post('/signinfo', (req, res) => {
   //connect with database
-  mongoose.connect('mongodb://13.125.252.142:38380/overEats', {
+  mongoose.connect(mongodbUri, {
     useNewUrlParser: true
   });
   let db = mongoose.connection;

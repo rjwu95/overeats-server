@@ -12,7 +12,7 @@ const cors = require('cors');
     LOAD THE CONFIG
 ==========================*/
 //must be in git ignore!!
-const config = require('./config');
+const config = require('./config.json');
 
 /* =======================
     LOAD THE ROUTER
